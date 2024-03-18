@@ -6,7 +6,7 @@ const EstadoProcesos = () => {
 
   const startProcess = async () => {
     try {
-      const response = await fetch('/start');
+      const response = await fetch('/api/start');
       const data = await response.json();
       setPid(data.pid);
       setStatusMessage(data.message);
@@ -22,7 +22,7 @@ const EstadoProcesos = () => {
     }
 
     try {
-      const response = await fetch(`/stop?pid=${pid}`);
+      const response = await fetch(`/api/stop?pid=${pid}`);
       const data = await response.json();
       setStatusMessage(data.message);
     } catch (error) {
@@ -37,7 +37,7 @@ const EstadoProcesos = () => {
     }
 
     try {
-      const response = await fetch(`/resume?pid=${pid}`);
+      const response = await fetch(`/api/resume?pid=${pid}`);
       const data = await response.json();
       setStatusMessage(data.message);
     } catch (error) {
@@ -52,7 +52,7 @@ const EstadoProcesos = () => {
     }
 
     try {
-      const response = await fetch(`/kill?pid=${pid}`);
+      const response = await fetch(`/api/kill?pid=${pid}`);
       const data = await response.json();
       setStatusMessage(data.message);
       setPid(null);

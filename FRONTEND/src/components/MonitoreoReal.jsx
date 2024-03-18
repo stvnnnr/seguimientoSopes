@@ -10,7 +10,7 @@ const MonitoreoReal = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("/data");
+      const response = await fetch("/api/data");
       if (!response.ok) {
         throw new Error("No se pudo obtener la respuesta de la API");
       }

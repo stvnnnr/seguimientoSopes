@@ -10,7 +10,7 @@ const MonitoreoTiempo = () => {
   useEffect(() => {
     const obtenerDatosDesdeBackend = async () => {
       try {
-        const response = await fetch('/historico');
+        const response = await fetch('/api/historico');
         if (!response.ok) {
           throw new Error('Error al obtener los datos desde el servidor');
         }

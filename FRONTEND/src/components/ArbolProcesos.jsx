@@ -9,7 +9,7 @@ const ArbolProcesos = () => {
 
   useEffect(() => {
     // Obtiene los datos de los procesos de la API
-    fetch('/processes')
+    fetch('/api/processes')
       .then(response => response.json())
       .then(data => {
         setProcesos(data);
