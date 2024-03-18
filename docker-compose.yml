@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'pass' 
+      MYSQL_DATABASE: 'memories'    
+      MYSQL_USER: 'user'          
+      MYSQL_PASSWORD: 'pass'     
+    volumes:
+      - mysqlvol:/var/lib/mysql
+
+  backend:
+    image: stvnru/backend:latest
+    pid: host
+    restart: always
+    volumes:
+    - type: bind
+      source: /proc
+      target: /proc
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  frontend:
+    image: stvnru/frontend:latest
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysqlvol:
