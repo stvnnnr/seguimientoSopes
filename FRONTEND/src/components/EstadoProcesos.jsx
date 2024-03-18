@@ -1,8 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Network } from 'vis-network/standalone';
+import 'vis-network/styles/vis-network.css';
 
 const EstadoProcesos = () => {
   const [statusMessage, setStatusMessage] = useState('');
   const [pid, setPid] = useState(null);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
+
+  useEffect(() => {
+    const container = document.getElementById('network');
+    const options = {
+      nodes: { borderWidth: 2 },
+      edges: { width: 2 }
+    };
+    const network = new Network(container, { nodes, edges }, options);
+
+    return () => {
+      network.destroy();
+    };
+  }, [nodes, edges]);
+
+  const actualizarRed = (color) => {
+    const newNodes = [
+      { id: 1, label: 'Proceso', color: { border: 'black', background: color } }
+    ];
+    const newEdges = [];
+
+    setNodes(newNodes);
+    setEdges(newEdges);
+  };
 
   const startProcess = async () => {
     try {
@@ -10,6 +37,7 @@ const EstadoProcesos = () => {
       const data = await response.json();
       setPid(data.pid);
       setStatusMessage(data.message);
+      actualizarRed('green'); // Cambio de color al iniciar
     } catch (error) {
       setStatusMessage('Error al iniciar el proceso');
     }
@@ -25,6 +53,7 @@ const EstadoProcesos = () => {
       const response = await fetch(`/api/stop?pid=${pid}`);
       const data = await response.json();
       setStatusMessage(data.message);
+      actualizarRed('red'); // Cambio de color al detener
     } catch (error) {
       setStatusMessage('Error al detener el proceso');
     }
@@ -40,6 +69,7 @@ const EstadoProcesos = () => {
       const response = await fetch(`/api/resume?pid=${pid}`);
       const data = await response.json();
       setStatusMessage(data.message);
+      // Agregar el cambio de color apropiado si es necesario
     } catch (error) {
       setStatusMessage('Error al reanudar el proceso');
     }
@@ -56,6 +86,7 @@ const EstadoProcesos = () => {
       const data = await response.json();
       setStatusMessage(data.message);
       setPid(null);
+      // Agregar el cambio de color apropiado si es necesario
     } catch (error) {
       setStatusMessage('Error al terminar el proceso');
     }
@@ -73,6 +104,7 @@ const EstadoProcesos = () => {
       <div>
         <p>Estado: {statusMessage}</p>
       </div>
+      <div id="network" style={{ width: '600px', height: '400px' }}></div>
     </div>
   );
 };
