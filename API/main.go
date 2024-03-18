@@ -50,6 +50,7 @@ type ProcessTree struct {
 }
 
 func main() {
+	crearTabla()
 	router := mux.NewRouter()
 
 	// router.HandleFunc("/users", getUsers).Methods("GET")
@@ -71,7 +72,31 @@ func main() {
 	fmt.Println("Server listening on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", handler))
 }
+func crearTabla() {
+	// Cadena de conexión a la base de datos
+	dataSourceName := "user:pass@tcp(db:3306)/memories"
 
+	// Abre una conexión a la base de datos MySQL
+	db, err := sql.Open("mysql", dataSourceName)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	// Ejecuta una sentencia SQL para crear la tabla memHistorico
+	_, err = db.Exec(`
+        CREATE TABLE IF NOT EXISTS memHistorico (
+            fechaHora TIMESTAMP,
+            memoria_ram INT,
+            cpu INT
+        );
+    `)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println("La tabla memHistorico se ha creado correctamente.")
+}
 func statusMemory(w http.ResponseWriter, r *http.Request) {
 	// Generar datos aleatorios para la memoria RAM y la CPU
 	totalUsed, total, err := getRAMInfo()
