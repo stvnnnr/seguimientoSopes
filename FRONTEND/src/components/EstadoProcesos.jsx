@@ -33,16 +33,13 @@ const EstadoProcesos = () => {
       { from: 1, to: 2, color: 'black' },
       { from: 2, to: 3, color: 'black' },
       { from: 3, to: 4, color: 'black' },
-      { from: 4, to: 5, color: 'black' }
+      { from: 4, to: 5, color: 'black' },
+      { from: 5, to: 1, color: 'black' } // Agregar arista de vuelta al estado de inicio
     ];
 
     // Cambiar el color del estado actual
-    if (color === 'green') {
-      newNodes[parseInt(pid) + 1].color.background = 'green';
-    } else if (color === 'yellow') {
-      newNodes[parseInt(pid) + 1].color.background = 'yellow';
-    } else if (color === 'red') {
-      newNodes[parseInt(pid) + 1].color.background = 'red';
+    if (pid !== null) {
+      newNodes[pid].color.background = color;
     }
 
     setNodes(newNodes);
@@ -62,7 +59,7 @@ const EstadoProcesos = () => {
   };
 
   const stopProcess = async () => {
-    if (!pid) {
+    if (pid === null) {
       setStatusMessage('No hay proceso para detener');
       return;
     }
@@ -78,7 +75,7 @@ const EstadoProcesos = () => {
   };
 
   const resumeProcess = async () => {
-    if (!pid) {
+    if (pid === null) {
       setStatusMessage('No hay proceso para reanudar');
       return;
     }
@@ -95,7 +92,7 @@ const EstadoProcesos = () => {
   };
 
   const killProcess = async () => {
-    if (!pid) {
+    if (pid === null) {
       setStatusMessage('No hay proceso para terminar');
       return;
     }
