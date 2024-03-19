@@ -25,7 +25,12 @@ const EstadoProcesos = () => {
     const newNodes = [
       { id: 1, label: 'Proceso', color: { border: 'black', background: color } }
     ];
-    const newEdges = [];
+    const newEdges = [
+      { from: 1, to: 2 },
+      { from: 2, to: 3 },
+      { from: 3, to: 4 },
+      { from: 4, to: 1 }
+    ];
 
     setNodes(newNodes);
     setEdges(newEdges);
@@ -36,7 +41,7 @@ const EstadoProcesos = () => {
       const response = await fetch('/api/start');
       const data = await response.json();
       setPid(data.pid);
-      setStatusMessage(data.message);
+      setStatusMessage(`Proceso iniciado con PID: ${data.pid}`);
       actualizarRed('green'); // Cambio de color al iniciar
     } catch (error) {
       setStatusMessage('Error al iniciar el proceso');
