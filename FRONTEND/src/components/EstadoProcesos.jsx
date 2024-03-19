@@ -1,49 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Network } from 'vis-network/standalone';
 import 'vis-network/styles/vis-network.css';
 
 const EstadoProcesos = () => {
   const [statusMessage, setStatusMessage] = useState('');
   const [pid, setPid] = useState(null);
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+  const networkContainer = useRef(null); // Referencia al contenedor de la red
 
   useEffect(() => {
-    const container = document.getElementById('network');
+    const container = networkContainer.current; // Obtener el contenedor de la red
     const options = {
       nodes: { borderWidth: 2 },
       edges: { width: 2 }
     };
-    const network = new Network(container, { nodes, edges }, options);
-
-    return () => {
-      network.destroy();
-    };
-  }, [nodes, edges]);
-
-  const actualizarRed = (color) => {
-    const newNodes = [
+    const nodes = [
       { id: 1, label: 'Inicio', color: { border: 'black', background: 'white' } },
       { id: 2, label: 'Iniciado', color: { border: 'black', background: 'white' } },
       { id: 3, label: 'Detenido', color: { border: 'black', background: 'white' } },
       { id: 4, label: 'Reanudado', color: { border: 'black', background: 'white' } },
       { id: 5, label: 'Terminado', color: { border: 'black', background: 'white' } }
     ];
-    const newEdges = [
+    const edges = [
       { from: 1, to: 2, color: 'black' },
       { from: 2, to: 3, color: 'black' },
       { from: 3, to: 4, color: 'black' },
       { from: 4, to: 5, color: 'black' },
       { from: 5, to: 1, color: 'black' } // Agregar arista de vuelta al estado de inicio
     ];
+    const network = new Network(container, { nodes, edges }, options);
+
+    return () => {
+      network.destroy();
+    };
+  }, []);
+
+  const actualizarRed = (color) => {
+    const nodes = [
+      { id: 1, label: 'Inicio', color: { border: 'black', background: 'white' } },
+      { id: 2, label: 'Iniciado', color: { border: 'black', background: 'white' } },
+      { id: 3, label: 'Detenido', color: { border: 'black', background: 'white' } },
+      { id: 4, label: 'Reanudado', color: { border: 'black', background: 'white' } },
+      { id: 5, label: 'Terminado', color: { border: 'black', background: 'white' } }
+    ];
 
     // Cambiar el color del estado actual
     if (pid !== null) {
-      newNodes[pid].color.background = color;
+      nodes[pid].color.background = color;
     }
 
-    setNodes(newNodes);
-    setEdges(newEdges);
+    setPid(nodes);
   };
 
   const startProcess = async () => {
@@ -121,7 +126,7 @@ const EstadoProcesos = () => {
       <div>
         <p>Estado: {statusMessage}</p>
       </div>
-      <div id="network" style={{ width: '600px', height: '400px' }}></div>
+      <div ref={networkContainer} style={{ width: '600px', height: '400px' }}></div>
     </div>
   );
 };
