@@ -23,14 +23,27 @@ const EstadoProcesos = () => {
 
   const actualizarRed = (color) => {
     const newNodes = [
-      { id: 1, label: 'Proceso', color: { border: 'black', background: color } }
+      { id: 1, label: 'Inicio', color: { border: 'black', background: 'white' } },
+      { id: 2, label: 'Iniciado', color: { border: 'black', background: 'white' } },
+      { id: 3, label: 'Detenido', color: { border: 'black', background: 'white' } },
+      { id: 4, label: 'Reanudado', color: { border: 'black', background: 'white' } },
+      { id: 5, label: 'Terminado', color: { border: 'black', background: 'white' } }
     ];
     const newEdges = [
-      { from: 1, to: 2 },
-      { from: 2, to: 3 },
-      { from: 3, to: 4 },
-      { from: 4, to: 1 }
+      { from: 1, to: 2, color: 'black' },
+      { from: 2, to: 3, color: 'black' },
+      { from: 3, to: 4, color: 'black' },
+      { from: 4, to: 5, color: 'black' }
     ];
+
+    // Cambiar el color del estado actual
+    if (color === 'green') {
+      newNodes[parseInt(pid) + 1].color.background = 'green';
+    } else if (color === 'yellow') {
+      newNodes[parseInt(pid) + 1].color.background = 'yellow';
+    } else if (color === 'red') {
+      newNodes[parseInt(pid) + 1].color.background = 'red';
+    }
 
     setNodes(newNodes);
     setEdges(newEdges);
