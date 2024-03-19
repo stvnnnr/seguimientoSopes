@@ -14,19 +14,19 @@ const EstadoProcesos = () => {
       edges: { width: 2 }
     };
     
-    const nodes = new vis.DataSet([
-      { id: 1, label: 'Iniciado', color: 'lightblue' },
-      { id: 2, label: 'Pausado', color: 'lightgreen' },
-      { id: 3, label: 'Continuado', color: 'lightyellow' },
-      { id: 4, label: 'Finalizado', color: 'lightgray' }
-    ]);
+    const nodes = [
+      { id: 1, label: 'Iniciado', color: 'lightblue', originalColor: 'lightblue' },
+      { id: 2, label: 'Pausado', color: 'lightgreen', originalColor: 'lightgreen' },
+      { id: 3, label: 'Continuado', color: 'lightyellow', originalColor: 'lightyellow' },
+      { id: 4, label: 'Finalizado', color: 'lightgray', originalColor: 'lightgray' }
+    ];
 
-    const edges = new vis.DataSet([
+    const edges = [
       { from: 1, to: 2 },
       { from: 1, to: 3 },
       { from: 2, to: 3 },
       { from: 3, to: 4 }
-    ]);
+    ];
 
     const newNetwork = new Network(container, { nodes, edges }, options);
     setNetwork(newNetwork);
