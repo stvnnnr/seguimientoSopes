@@ -1,54 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Network } from 'vis-network/standalone';
 import 'vis-network/styles/vis-network.css';
 
 const EstadoProcesos = () => {
   const [statusMessage, setStatusMessage] = useState('');
   const [pid, setPid] = useState(null);
-  const networkContainer = useRef(null); // Referencia al contenedor de la red
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
 
   useEffect(() => {
-    const container = networkContainer.current; // Obtener el contenedor de la red
+    const container = document.getElementById('network');
     const options = {
       nodes: { borderWidth: 2 },
       edges: { width: 2 }
     };
-    const nodes = [
-      { id: 1, label: 'Inicio', color: { border: 'black', background: 'white' } },
-      { id: 2, label: 'Iniciado', color: { border: 'black', background: 'white' } },
-      { id: 3, label: 'Detenido', color: { border: 'black', background: 'white' } },
-      { id: 4, label: 'Reanudado', color: { border: 'black', background: 'white' } },
-      { id: 5, label: 'Terminado', color: { border: 'black', background: 'white' } }
-    ];
-    const edges = [
-      { from: 1, to: 2, color: 'black' },
-      { from: 2, to: 3, color: 'black' },
-      { from: 3, to: 4, color: 'black' },
-      { from: 4, to: 5, color: 'black' },
-      { from: 5, to: 1, color: 'black' } // Agregar arista de vuelta al estado de inicio
-    ];
     const network = new Network(container, { nodes, edges }, options);
 
     return () => {
       network.destroy();
     };
-  }, []);
+  }, [nodes, edges]);
 
   const actualizarRed = (color) => {
-    const nodes = [
-      { id: 1, label: 'Inicio', color: { border: 'black', background: 'white' } },
-      { id: 2, label: 'Iniciado', color: { border: 'black', background: 'white' } },
-      { id: 3, label: 'Detenido', color: { border: 'black', background: 'white' } },
-      { id: 4, label: 'Reanudado', color: { border: 'black', background: 'white' } },
-      { id: 5, label: 'Terminado', color: { border: 'black', background: 'white' } }
+    const newNodes = [
+      { id: 1, label: 'Proceso', color: { border: 'black', background: color } }
     ];
+    const newEdges = [];
 
-    // Cambiar el color del estado actual
-    if (pid !== null) {
-      nodes[pid].color.background = color;
-    }
-
-    setPid(nodes);
+    setNodes(newNodes);
+    setEdges(newEdges);
   };
 
   const startProcess = async () => {
@@ -56,7 +36,7 @@ const EstadoProcesos = () => {
       const response = await fetch('/api/start');
       const data = await response.json();
       setPid(data.pid);
-      setStatusMessage(`Proceso iniciado con PID: ${data.pid}`);
+      setStatusMessage(data.message);
       actualizarRed('green'); // Cambio de color al iniciar
     } catch (error) {
       setStatusMessage('Error al iniciar el proceso');
@@ -64,7 +44,7 @@ const EstadoProcesos = () => {
   };
 
   const stopProcess = async () => {
-    if (pid === null) {
+    if (!pid) {
       setStatusMessage('No hay proceso para detener');
       return;
     }
@@ -80,7 +60,7 @@ const EstadoProcesos = () => {
   };
 
   const resumeProcess = async () => {
-    if (pid === null) {
+    if (!pid) {
       setStatusMessage('No hay proceso para reanudar');
       return;
     }
@@ -97,7 +77,7 @@ const EstadoProcesos = () => {
   };
 
   const killProcess = async () => {
-    if (pid === null) {
+    if (!pid) {
       setStatusMessage('No hay proceso para terminar');
       return;
     }
@@ -126,7 +106,7 @@ const EstadoProcesos = () => {
       <div>
         <p>Estado: {statusMessage}</p>
       </div>
-      <div ref={networkContainer} style={{ width: '600px', height: '400px' }}></div>
+      <div id="network" style={{ width: '600px', height: '400px' }}></div>
     </div>
   );
 };
