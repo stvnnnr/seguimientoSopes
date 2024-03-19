@@ -53,7 +53,7 @@ const EstadoProcesos = () => {
       const response = await fetch(`/api/stop?pid=${pid}`);
       const data = await response.json();
       setStatusMessage(data.message);
-      actualizarRed('red'); // Cambio de color al detener
+      actualizarRed('yellow'); // Cambio de color al detener
     } catch (error) {
       setStatusMessage('Error al detener el proceso');
     }
@@ -70,6 +70,7 @@ const EstadoProcesos = () => {
       const data = await response.json();
       setStatusMessage(data.message);
       // Agregar el cambio de color apropiado si es necesario
+      actualizarRed('green');
     } catch (error) {
       setStatusMessage('Error al reanudar el proceso');
     }
@@ -87,6 +88,7 @@ const EstadoProcesos = () => {
       setStatusMessage(data.message);
       setPid(null);
       // Agregar el cambio de color apropiado si es necesario
+      actualizarRed('red');
     } catch (error) {
       setStatusMessage('Error al terminar el proceso');
     }
