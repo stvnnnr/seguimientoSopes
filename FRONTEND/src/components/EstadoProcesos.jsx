@@ -5,8 +5,7 @@ import 'vis-network/styles/vis-network.css';
 const EstadoProcesos = () => {
   const [statusMessage, setStatusMessage] = useState('');
   const [pid, setPid] = useState(null);
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+  const [network, setNetwork] = useState(null);
 
   useEffect(() => {
     const container = document.getElementById('network');
@@ -14,21 +13,38 @@ const EstadoProcesos = () => {
       nodes: { borderWidth: 2 },
       edges: { width: 2 }
     };
-    const network = new Network(container, { nodes, edges }, options);
+    
+    const nodes = new vis.DataSet([
+      { id: 1, label: 'Iniciado', color: 'lightblue' },
+      { id: 2, label: 'Pausado', color: 'lightgreen' },
+      { id: 3, label: 'Continuado', color: 'lightyellow' },
+      { id: 4, label: 'Finalizado', color: 'lightgray' }
+    ]);
+
+    const edges = new vis.DataSet([
+      { from: 1, to: 2 },
+      { from: 1, to: 3 },
+      { from: 2, to: 3 },
+      { from: 3, to: 4 }
+    ]);
+
+    const newNetwork = new Network(container, { nodes, edges }, options);
+    setNetwork(newNetwork);
 
     return () => {
-      network.destroy();
+      newNetwork.destroy();
     };
-  }, [nodes, edges]);
+  }, []);
 
-  const actualizarRed = (color) => {
-    const newNodes = [
-      { id: 1, label: 'Proceso', color: { border: 'black', background: color } }
-    ];
-    const newEdges = [];
-
-    setNodes(newNodes);
-    setEdges(newEdges);
+  const actualizarRed = (state) => {
+    const nodes = network.body.data.nodes.get();
+    const updatedNodes = nodes.map(node => {
+      if (node.label === state) {
+        return { ...node, color: 'red' }; // Cambiar el color del nodo correspondiente al estado actual
+      }
+      return { ...node, color: node.originalColor }; // Restaurar el color original de los demás nodos
+    });
+    network.body.data.nodes.update(updatedNodes);
   };
 
   const startProcess = async () => {
@@ -37,7 +53,7 @@ const EstadoProcesos = () => {
       const data = await response.json();
       setPid(data.pid);
       setStatusMessage(data.message);
-      actualizarRed('green'); // Cambio de color al iniciar
+      actualizarRed('Iniciado'); // Cambiar el color al iniciar
     } catch (error) {
       setStatusMessage('Error al iniciar el proceso');
     }
@@ -53,7 +69,7 @@ const EstadoProcesos = () => {
       const response = await fetch(`/api/stop?pid=${pid}`);
       const data = await response.json();
       setStatusMessage(data.message);
-      actualizarRed('yellow'); // Cambio de color al detener
+      actualizarRed('Pausado'); // Cambiar el color al detener
     } catch (error) {
       setStatusMessage('Error al detener el proceso');
     }
@@ -70,7 +86,7 @@ const EstadoProcesos = () => {
       const data = await response.json();
       setStatusMessage(data.message);
       // Agregar el cambio de color apropiado si es necesario
-      actualizarRed('green');
+      actualizarRed('Continuado');
     } catch (error) {
       setStatusMessage('Error al reanudar el proceso');
     }
@@ -88,7 +104,7 @@ const EstadoProcesos = () => {
       setStatusMessage(data.message);
       setPid(null);
       // Agregar el cambio de color apropiado si es necesario
-      actualizarRed('red');
+      actualizarRed('Finalizado');
     } catch (error) {
       setStatusMessage('Error al terminar el proceso');
     }
