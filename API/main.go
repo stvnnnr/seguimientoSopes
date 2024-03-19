@@ -50,6 +50,8 @@ type ProcessTree struct {
 }
 
 func main() {
+	go ejecutarCada5Segundos()
+
 	crearTabla()
 	router := mux.NewRouter()
 
@@ -118,10 +120,6 @@ func statusMemory(w http.ResponseWriter, r *http.Request) {
 	data := map[string]int{
 		"ram": ramData,
 		"cpu": cpuData,
-	}
-	erri := insertarDatos(time.Now(), ramData, cpuData)
-	if erri != nil {
-		log.Fatal(err)
 	}
 
 	// Establecer el encabezado Content-Type
@@ -289,6 +287,35 @@ func KillProcess(w http.ResponseWriter, r *http.Request) {
 }
 
 // ----------------------------------------------------------------------
+
+func ejecutarCada5Segundos() {
+	for {
+		// Ejecutar tu código cada 5 segundos
+		totalUsed, total, err := getRAMInfo()
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		totalCpu, cpuUsage, err := obtenerCPUInfo()
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		ramData := int((totalUsed * 100) / total)
+		cpuData := int((cpuUsage * 100) / totalCpu)
+
+		erri := insertarDatos(time.Now(), ramData, cpuData)
+		if erri != nil {
+			log.Fatal(err)
+		}
+
+		// Esperar 5 segundos antes de la próxima ejecución
+		time.Sleep(5 * time.Second)
+	}
+}
+
 func verInserciones() ([]byte, error) {
 	// Cadena de conexión a la base de datos
 	connectionString := "user:pass@tcp(db:3306)/memories"
